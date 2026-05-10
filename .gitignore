@@ -1,0 +1,42 @@
+# Render intermediates
+*.webm
+*-raw-*.mp4
+marketing-raw-*.mp4
+
+# QA frames (regenerated each render)
+qa-frames/
+**/qa-frames/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.Python
+
+# Node
+node_modules/
+package-lock.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Whisper model files (too large for git, downloaded by user)
+*.bin
+!ggml-tiny.bin.placeholder
+
+# Local environment overrides
+.env
+.env.local

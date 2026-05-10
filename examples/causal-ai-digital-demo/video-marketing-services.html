@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es-PE" style="background:#050a14;">
+<head>
+  <meta charset="UTF-8">
+  <title>Causal AI Digital — Marketing Video (Square, multi-page)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1080px; height: 1080px;
+      overflow: hidden;
+      background: #050a14;
+      color: white;
+      font-family: 'Inter', -apple-system, sans-serif;
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Slide system */
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0;
+      transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1);
+      z-index: 10;
+      background: #050a14;
+    }
+    .slide.active { opacity: 1; }
+
+    /* =====================================================
+       MULTI-PAGE TOUR — 2 dark-themed slides
+       (skipped /nosotros and /contacto: white bg breaks cinematic flow, regla #17)
+       ===================================================== */
+    .demo-slide { overflow: hidden; align-items: stretch; justify-content: stretch; }
+    .demo-frame-wrapper {
+      position: relative;
+      width: 1080px; height: 1080px;
+      overflow: hidden;
+      background: #050a14;
+    }
+    .demo-frame-wrapper iframe {
+      width: 1080px; height: 5800px;
+      border: 0;
+      transform: translate3d(0, 0, 0) scale(1.0);
+      transform-origin: top center;
+      will-change: transform;
+    }
+
+    /* Per-page scroll tours — animation only fires when slide active */
+    .demo-slide.active .page-1 { animation: scroll-tour-home      9s linear forwards; }
+    .demo-slide.active .page-2 { animation: scroll-tour-productos 14s linear forwards; }
+
+    /* HOME (9s) — drone landing → hero hold → scroll through key sections */
+    @keyframes scroll-tour-home {
+      0%   { transform: translate3d(0, 0, 0)        scale(1.15); }
+      17%  { transform: translate3d(0, 0, 0)        scale(1.0);  }   /* drone landed at 1.5s */
+      33%  { transform: translate3d(0, 0, 0)        scale(1.0);  }   /* hold hero to 3s */
+      72%  { transform: translate3d(0, -1500px, 0)  scale(1.0);  }   /* scroll to categories at 6.5s */
+      100% { transform: translate3d(0, -2400px, 0)  scale(1.0);  }   /* land on pillars at 9s */
+    }
+
+    /* PRODUCTOS (14s) — long pan through grid + slight zoom on the chatbot pitch moment */
+    @keyframes scroll-tour-productos {
+      0%   { transform: translate3d(0, 0, 0)        scale(1.0);  }
+      30%  { transform: translate3d(0, -800px, 0)   scale(1.0);  }   /* into grid at 4.2s */
+      55%  { transform: translate3d(0, -1700px, 0)  scale(1.06); }   /* chatbot pitch lands here */
+      80%  { transform: translate3d(0, -2700px, 0)  scale(1.0);  }   /* deeper into grid */
+      100% { transform: translate3d(0, -3400px, 0)  scale(1.0);  }   /* end on bottom of grid */
+    }
+
+    /* Cinematic vignette */
+    .demo-frame-wrapper::after {
+      content: '';
+      position: absolute; inset: 0;
+      pointer-events: none; z-index: 2;
+      background:
+        radial-gradient(ellipse at center,
+          transparent 55%,
+          rgba(5,10,20,0.35) 100%),
+        linear-gradient(to bottom,
+          rgba(5,10,20,0.25) 0%, transparent 8%,
+          transparent 92%, rgba(5,10,20,0.25) 100%);
+    }
+
+    /* =====================================================
+       FAKE CURSOR OVERLAY (regla #15 + #18 — universal visibility)
+       Single click event: home → productos at 9s
+       ===================================================== */
+    .fake-cursor {
+      position: fixed;
+      width: 32px; height: 46px;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      /* Dual drop-shadow: dark for contrast on light bg + soft for cinematic feel */
+      filter:
+        drop-shadow(0 0 6px rgba(0, 0, 0, 0.9))
+        drop-shadow(0 4px 10px rgba(0, 0, 0, 0.7));
+    }
+
+    /* Click 1: home → productos at 9s. Pulse at 8.7s. Lands on top-nav "Productos" link. */
+    .cursor-1 {
+      left: 320px; top: 60px;
+      animation: cursor-click 1s ease-out forwards 7.95s;
+    }
+
+    @keyframes cursor-click {
+      0%   { opacity: 0; transform: translate(-100px, -80px) scale(1.2); }
+      20%  { opacity: 1; transform: translate(-100px, -80px) scale(1.1); }
+      60%  { opacity: 1; transform: translate(0, 0)            scale(1);   }
+      72%  { opacity: 1; transform: translate(0, 0)            scale(0.78);}
+      82%  { opacity: 1; transform: translate(0, 0)            scale(1);   }
+      100% { opacity: 0; transform: translate(0, 0)            scale(1);   }
+    }
+
+    body.cta-active .fake-cursor { opacity: 0 !important; animation: none !important; }
+
+    /* =====================================================
+       CTA SLIDE
+       ===================================================== */
+    .cta-slide { flex-direction: column; gap: 2rem; }
+
+    .cta-slide::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 9999px;
+      background: rgba(0, 210, 255, 0.12);
+      filter: blur(100px);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+    }
+
+    .cta-logo-card {
+      position: relative; z-index: 1;
+      background: white;
+      border-radius: 1.75rem;
+      padding: 2.5rem 3.5rem;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.05),
+                  0 30px 80px rgba(0,210,255,0.18);
+      opacity: 0;
+      transform: scale(0.94);
+      animation: cardIn 1.4s cubic-bezier(0.16,1,0.3,1) forwards 0.2s,
+                 cardBreathe 4s ease-in-out infinite 1.6s;
+    }
+    .cta-logo-card img { width: 320px; height: auto; display: block; }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: scale(0.94); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes cardBreathe {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.015); }
+    }
+
+    .cta-conversemos {
+      position: relative; z-index: 1;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.6rem; font-weight: 500;
+      color: #00D2FF;
+      letter-spacing: -0.01em; margin-top: 0.5rem;
+      opacity: 0;
+      animation: fadeUp 1.2s ease forwards 0.9s;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .cta-pill {
+      position: relative; z-index: 1;
+      display: inline-flex; align-items: center; gap: 1rem;
+      background: #25D366; color: white;
+      padding: 1.25rem 2.75rem;
+      border-radius: 9999px;
+      font-size: 1.7rem; font-weight: 600;
+      letter-spacing: 0.01em;
+      box-shadow: 0 0 50px rgba(37,211,102,0.45),
+                  0 12px 30px rgba(0,0,0,0.4);
+      opacity: 0;
+      animation: fadeUp 1.2s ease forwards 1.4s;
+    }
+    .cta-pill svg { width: 36px; height: 36px; }
+
+    /* =====================================================
+       SUBTITLES — burned-in (whisper word-level timestamps)
+       ===================================================== */
+    .subtitles {
+      position: fixed;
+      bottom: 90px;
+      left: 0; right: 0;
+      height: 80px;
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .sub {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      white-space: nowrap;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 1.7rem;
+      color: white;
+      letter-spacing: -0.01em;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.85),
+                   0 0 20px rgba(0,0,0,0.6);
+      opacity: 0;
+      padding: 0.4rem 1.2rem;
+      background: rgba(5, 10, 20, 0.55);
+      backdrop-filter: blur(12px);
+      border-radius: 0.6rem;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* Two-animation pattern (regla #1): subFadeIn at phrase.start, subFadeOut at phrase.end */
+    .sub-1  { animation: subFadeIn 0.18s ease-out forwards 0.13s,  subFadeOut 0.22s ease-in forwards 1.60s; }
+    .sub-2  { animation: subFadeIn 0.18s ease-out forwards 1.72s,  subFadeOut 0.22s ease-in forwards 3.15s; }
+    .sub-3  { animation: subFadeIn 0.18s ease-out forwards 3.15s,  subFadeOut 0.22s ease-in forwards 5.58s; }
+    .sub-4  { animation: subFadeIn 0.18s ease-out forwards 6.14s,  subFadeOut 0.22s ease-in forwards 8.08s; }
+    .sub-5  { animation: subFadeIn 0.18s ease-out forwards 8.08s,  subFadeOut 0.22s ease-in forwards 9.68s; }
+    .sub-6  { animation: subFadeIn 0.18s ease-out forwards 9.68s,  subFadeOut 0.22s ease-in forwards 10.99s; }
+    .sub-7  { animation: subFadeIn 0.18s ease-out forwards 10.99s, subFadeOut 0.22s ease-in forwards 12.16s; }
+    .sub-8  { animation: subFadeIn 0.18s ease-out forwards 12.16s, subFadeOut 0.22s ease-in forwards 14.21s; }
+    .sub-9  { animation: subFadeIn 0.18s ease-out forwards 14.21s, subFadeOut 0.22s ease-in forwards 15.98s; }
+    .sub-10 { animation: subFadeIn 0.18s ease-out forwards 15.98s, subFadeOut 0.22s ease-in forwards 16.94s; }
+    .sub-11 { animation: subFadeIn 0.18s ease-out forwards 17.19s, subFadeOut 0.22s ease-in forwards 18.67s; }
+    .sub-12 { animation: subFadeIn 0.18s ease-out forwards 18.67s, subFadeOut 0.22s ease-in forwards 21.04s; }
+
+    @keyframes subFadeIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes subFadeOut {
+      from { opacity: 1; transform: translateX(-50%) translateY(0); }
+      to   { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+    }
+
+    body.cta-active .subtitles { opacity: 0; transition: opacity 0.6s ease; }
+  </style>
+</head>
+<body>
+  <!-- 1. Home (0–9s) — drone landing + hero + scroll to pillars -->
+  <div class="slide demo-slide active" data-duration="9000">
+    <div class="demo-frame-wrapper">
+      <iframe class="page-1" src="https://website-pi-seven-28.vercel.app/" loading="eager" sandbox="allow-same-origin allow-scripts" onload="window.iframe1Loaded=true"></iframe>
+    </div>
+  </div>
+
+  <!-- 2. Productos (9–23s = 14s) — chatbot pitch lands HERE, long dwell on grid -->
+  <div class="slide demo-slide" data-duration="14000">
+    <div class="demo-frame-wrapper">
+      <iframe class="page-2" src="https://website-pi-seven-28.vercel.app/productos" loading="eager" sandbox="allow-same-origin allow-scripts"></iframe>
+    </div>
+  </div>
+
+  <!-- 3. CTA (23–28s = 5s) -->
+  <div class="slide cta-slide" data-duration="5000">
+    <div class="cta-logo-card">
+      <img src="causal-ai-digital-logo.png" alt="Causal AI Digital">
+    </div>
+    <div class="cta-conversemos">Conversemos.</div>
+    <div class="cta-pill">
+      <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.74.46 3.46 1.32 4.97L2 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.66-1.03-5.16-2.91-7.04A9.85 9.85 0 0012.04 2zm.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 012.41 5.83c0 4.54-3.7 8.23-8.24 8.23-1.48 0-2.93-.39-4.19-1.15l-.3-.17-3.12.82.83-3.04-.2-.32a8.188 8.188 0 01-1.26-4.38c.01-4.54 3.7-8.24 8.25-8.24zm-2.84 4.46c-.18 0-.45.07-.69.32-.24.25-.91.89-.91 2.18 0 1.29.93 2.53 1.06 2.71.13.18 1.81 2.88 4.46 3.93 2.21.87 2.66.7 3.14.66.48-.04 1.55-.63 1.77-1.24.22-.61.22-1.13.16-1.24-.06-.11-.24-.18-.5-.31-.27-.13-1.55-.77-1.79-.85-.24-.09-.42-.13-.6.13-.18.27-.69.85-.84 1.03-.16.18-.31.2-.58.07-.27-.13-1.13-.42-2.16-1.33-.8-.71-1.34-1.59-1.49-1.86-.16-.27-.02-.41.12-.55.12-.12.27-.31.41-.47.13-.16.18-.27.27-.45.09-.18.04-.34-.02-.47-.06-.13-.59-1.42-.81-1.93-.21-.51-.43-.44-.59-.45-.15-.01-.32-.01-.5-.01z"/>
+      </svg>
+      +51 972 571 826
+    </div>
+  </div>
+
+  <!-- Fake cursor overlay (1 instance, 1 transition) — strong stroke for universal visibility -->
+  <svg class="fake-cursor cursor-1" viewBox="0 0 24 36" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,0 L0,28 L7,21 L11,30 L14,29 L10,20 L18,20 Z"
+          fill="white" stroke="black" stroke-width="3" stroke-linejoin="round"/>
+  </svg>
+
+  <!-- Burned-in subtitles -->
+  <div class="subtitles">
+    <div class="sub sub-1">Hay webs que se ven.</div>
+    <div class="sub sub-2">Hay webs que se sienten.</div>
+    <div class="sub sub-3">Y hay webs que venden por ti.</div>
+    <div class="sub sub-4">Aprenden de cada visita.</div>
+    <div class="sub sub-5">De cada clic.</div>
+    <div class="sub sub-6">Cada web que diseñamos</div>
+    <div class="sub sub-7">viene con un chatbot</div>
+    <div class="sub sub-8">que conoce todos tus productos</div>
+    <div class="sub sub-9">y atiende a tu cliente</div>
+    <div class="sub sub-10">siempre.</div>
+    <div class="sub sub-11">Diseño que enamora.</div>
+    <div class="sub sub-12">Inteligencia que vende.</div>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    let current = 0;
+
+    function next() {
+      current++;
+      if (current < slides.length) {
+        slides.forEach(s => s.classList.remove('active'));
+        slides[current].classList.add('active');
+        if (slides[current].classList.contains('cta-slide')) {
+          document.body.classList.add('cta-active');
+        }
+        setTimeout(next, parseInt(slides[current].dataset.duration));
+      }
+    }
+
+    /* Slideshow + scroll-tour animations are gated until the iframe is fully loaded.
+       Python (record_video.py) calls window.startSlideshow() once it has waited for
+       iframe load — this prevents white "loading" frames at the start of the recording. */
+    document.documentElement.classList.add('slideshow-paused');
+    const styleEl = document.createElement('style');
+    styleEl.textContent =
+      ".slideshow-paused .demo-slide.active .page-1," +
+      ".slideshow-paused .demo-slide.active .page-2," +
+      ".slideshow-paused .fake-cursor," +
+      ".slideshow-paused .sub { animation-play-state: paused !important; }";
+    document.head.appendChild(styleEl);
+
+    window.startSlideshow = function() {
+      document.documentElement.classList.remove('slideshow-paused');
+      setTimeout(next, parseInt(slides[0].dataset.duration));
+    };
+
+    /* Auto-fallback: if Python doesn't trigger within 5s (e.g. opening file directly
+       in a browser for dev preview), start anyway. */
+    setTimeout(function() {
+      if (document.documentElement.classList.contains('slideshow-paused')) {
+        window.startSlideshow();
+      }
+    }, 5000);
+  </script>
+</body>
+</html>
