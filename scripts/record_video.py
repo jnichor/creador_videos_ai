@@ -447,7 +447,14 @@ def record_format(project: Path, fmt_name: str, fmt: dict,
     cmd += [
         "-filter_complex", _build_filter_complex(has_music, sfx_entries),
         "-map", "0:v", "-map", "[mixed]",
-        "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
+        # Encoder tuned for cinematic camera-pan video (constant motion across
+        # the frame). `-preset medium` + `-crf 18` ≈ 2-3× slower than veryfast
+        # but the motion encoding is visibly cleaner — no banding on gradients,
+        # no smear on text during fast scrolls. `-tune film` biases the encoder
+        # toward natural-looking motion (less aggressive deblocking). Output
+        # files are ~30-50% larger than the old setting; still well under 20MB
+        # for a 30s 1080p clip.
+        "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-tune", "film",
         "-c:a", "aac", "-b:a", "192k",
         "-pix_fmt", "yuv420p",
         "-movflags", "+faststart",

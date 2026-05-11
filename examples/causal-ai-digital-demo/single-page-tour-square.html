@@ -57,13 +57,13 @@
     .demo-slide.active .page-1 { animation: scroll-tour-single 23s linear forwards; }
 
     @keyframes scroll-tour-single {
-      0%   { transform: translate3d(0, 0, 0)        scale(1.10); }   /* drone-in on hero */
-      10%  { transform: translate3d(0, 0, 0)        scale(1.0);  }   /* hero landed at 2.3s */
-      22%  { transform: translate3d(0, 0, 0)        scale(1.0);  }   /* hold hero to 5s */
-      40%  { transform: translate3d(0, -900px, 0)   scale(1.0);  }   /* features at 9.2s */
-      60%  { transform: translate3d(0, -2100px, 0)  scale(1.0);  }   /* testimonials at 13.8s */
-      80%  { transform: translate3d(0, -3400px, 0)  scale(1.0);  }   /* pricing at 18.4s */
-      100% { transform: translate3d(0, -4500px, 0)  scale(1.0);  }   /* footer at 23s */
+      0%   { transform: translate3d(0, 0, 0)        scale(1.10); }
+      10%  { transform: translate3d(0, 0, 0)        scale(1.0);  }
+      22%  { transform: translate3d(0, 0, 0)        scale(1.0);  }   /* hero hold to 5s */
+      40%  { transform: translate3d(0, -500px, 0)   scale(1.0);  }   /* features at 9.2s — 119 px/s */
+      60%  { transform: translate3d(0, -1100px, 0)  scale(1.0);  }   /* testimonials at 13.8s — 130 px/s */
+      80%  { transform: translate3d(0, -1750px, 0)  scale(1.0);  }   /* pricing at 18.4s — 141 px/s */
+      100% { transform: translate3d(0, -2400px, 0)  scale(1.0);  }   /* footer at 23s — 130 px/s avg */
     }
 
     /* Cinematic vignette */

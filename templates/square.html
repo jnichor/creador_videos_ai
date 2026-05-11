@@ -58,17 +58,16 @@
       0%   { transform: translate3d(0, 0, 0)        scale(1.15); }
       17%  { transform: translate3d(0, 0, 0)        scale(1.0);  }   /* drone landed at 1.5s */
       33%  { transform: translate3d(0, 0, 0)        scale(1.0);  }   /* hold hero to 3s */
-      72%  { transform: translate3d(0, -1500px, 0)  scale(1.0);  }   /* scroll to categories at 6.5s */
-      100% { transform: translate3d(0, -2400px, 0)  scale(1.0);  }   /* land on pillars at 9s */
+      100% { transform: translate3d(0, -800px, 0)   scale(1.0);  }   /* uniform scroll to 9s — 133 px/s */
     }
 
     /* PRODUCTOS (14s) — long pan through grid + slight zoom on the chatbot pitch moment */
     @keyframes scroll-tour-productos {
       0%   { transform: translate3d(0, 0, 0)        scale(1.0);  }
-      30%  { transform: translate3d(0, -800px, 0)   scale(1.0);  }   /* into grid at 4.2s */
-      55%  { transform: translate3d(0, -1700px, 0)  scale(1.06); }   /* chatbot pitch lands here */
-      80%  { transform: translate3d(0, -2700px, 0)  scale(1.0);  }   /* deeper into grid */
-      100% { transform: translate3d(0, -3400px, 0)  scale(1.0);  }   /* end on bottom of grid */
+      35%  { transform: translate3d(0, -550px, 0)   scale(1.0);  }   /* into grid at 4.9s — 112 px/s */
+      55%  { transform: translate3d(0, -950px, 0)   scale(1.06); }   /* chatbot pitch lands here, slight zoom — 143 px/s */
+      80%  { transform: translate3d(0, -1400px, 0)  scale(1.0);  }   /* deeper into grid — 129 px/s */
+      100% { transform: translate3d(0, -1800px, 0)  scale(1.0);  }   /* end at 14s — 129 px/s avg */
     }
 
     /* Cinematic vignette */
