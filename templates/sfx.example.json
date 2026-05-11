@@ -1,0 +1,7 @@
+[
+  { "file": "sfx/sub-bass-impact.mp3", "time": 0.4,  "volume": 0.50 },
+  { "file": "sfx/whoosh-soft.mp3",     "time": 8.6,  "volume": 0.45 },
+  { "file": "sfx/ui-click-tap.mp3",    "time": 8.78, "volume": 0.55 },
+  { "file": "sfx/riser-short.mp3",     "time": 22.4, "volume": 0.35 },
+  { "file": "sfx/whoosh-soft.mp3",     "time": 22.8, "volume": 0.45 }
+]

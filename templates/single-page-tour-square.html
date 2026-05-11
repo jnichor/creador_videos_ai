@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="es-PE" style="background:#050a14;">
+<head>
+  <meta charset="UTF-8">
+  <title>{{CLIENT_NAME}} — Marketing Video (Square 1080×1080, multi-page)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1080px; height: 1080px;
+      overflow: hidden;
+      background: #050a14;
+      color: white;
+      font-family: 'Inter', -apple-system, sans-serif;
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Slide system */
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0;
+      transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1);
+      z-index: 10;
+      background: #050a14;
+    }
+    .slide.active { opacity: 1; }
+
+    /* =====================================================
+       MULTI-PAGE TOUR — 2 dark-themed slides
+       (skipped /nosotros and /contacto: white bg breaks cinematic flow, regla #17)
+       ===================================================== */
+    .demo-slide { overflow: hidden; align-items: stretch; justify-content: stretch; }
+    .demo-frame-wrapper {
+      position: relative;
+      width: 1080px; height: 1080px;
+      overflow: hidden;
+      background: #050a14;
+    }
+    .demo-frame-wrapper iframe {
+      width: 1080px; height: 5800px;
+      border: 0;
+      transform: translate3d(0, 0, 0) scale(1.0);
+      transform-origin: top center;
+      will-change: transform;
+    }
+
+    /* Single-page tour — ONE long-form URL, 23s of cinematic scroll.
+       Five keyframe stops let the eye breathe at the sections that matter:
+         hero hold → features → testimonials → pricing → footer.
+       Hand-tune the translateY values to land on each section of YOUR page —
+       sections live at different vertical pixels per client. */
+    .demo-slide.active .page-1 { animation: scroll-tour-single 23s linear forwards; }
+
+    @keyframes scroll-tour-single {
+      0%   { transform: translate3d(0, 0, 0)        scale(1.10); }   /* drone-in on hero */
+      10%  { transform: translate3d(0, 0, 0)        scale(1.0);  }   /* hero landed at 2.3s */
+      22%  { transform: translate3d(0, 0, 0)        scale(1.0);  }   /* hold hero to 5s */
+      40%  { transform: translate3d(0, -900px, 0)   scale(1.0);  }   /* features at 9.2s */
+      60%  { transform: translate3d(0, -2100px, 0)  scale(1.0);  }   /* testimonials at 13.8s */
+      80%  { transform: translate3d(0, -3400px, 0)  scale(1.0);  }   /* pricing at 18.4s */
+      100% { transform: translate3d(0, -4500px, 0)  scale(1.0);  }   /* footer at 23s */
+    }
+
+    /* Cinematic vignette */
+    .demo-frame-wrapper::after {
+      content: '';
+      position: absolute; inset: 0;
+      pointer-events: none; z-index: 2;
+      background:
+        radial-gradient(ellipse at center,
+          transparent 55%,
+          rgba(5,10,20,0.35) 100%),
+        linear-gradient(to bottom,
+          rgba(5,10,20,0.25) 0%, transparent 8%,
+          transparent 92%, rgba(5,10,20,0.25) 100%);
+    }
+
+    /* =====================================================
+       FAKE CURSOR OVERLAY (regla #15 + #18 — universal visibility)
+       Single click event: home → productos at 9s
+       ===================================================== */
+    .fake-cursor {
+      position: fixed;
+      width: 32px; height: 46px;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      /* Dual drop-shadow: dark for contrast on light bg + soft for cinematic feel */
+      filter:
+        drop-shadow(0 0 6px rgba(0, 0, 0, 0.9))
+        drop-shadow(0 4px 10px rgba(0, 0, 0, 0.7));
+    }
+
+    /* Click 1: home → productos at 9s. Pulse at 8.7s. Lands on top-nav "Productos" link. */
+    .cursor-1 {
+      left: 320px; top: 60px;
+      animation: cursor-click 1s ease-out forwards 7.95s;
+    }
+
+    @keyframes cursor-click {
+      0%   { opacity: 0; transform: translate(-100px, -80px) scale(1.2); }
+      20%  { opacity: 1; transform: translate(-100px, -80px) scale(1.1); }
+      60%  { opacity: 1; transform: translate(0, 0)            scale(1);   }
+      72%  { opacity: 1; transform: translate(0, 0)            scale(0.78);}
+      82%  { opacity: 1; transform: translate(0, 0)            scale(1);   }
+      100% { opacity: 0; transform: translate(0, 0)            scale(1);   }
+    }
+
+    body.cta-active .fake-cursor { opacity: 0 !important; animation: none !important; }
+
+    /* =====================================================
+       CTA SLIDE
+       ===================================================== */
+    .cta-slide { flex-direction: column; gap: 2rem; }
+
+    .cta-slide::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 9999px;
+      background: rgba(0, 210, 255, 0.12);
+      filter: blur(100px);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+    }
+
+    .cta-logo-card {
+      position: relative; z-index: 1;
+      background: white;
+      border-radius: 1.75rem;
+      padding: 2.5rem 3.5rem;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.05),
+                  0 30px 80px rgba(0,210,255,0.18);
+      opacity: 0;
+      transform: scale(0.94);
+      animation: cardIn 1.4s cubic-bezier(0.16,1,0.3,1) forwards 0.2s,
+                 cardBreathe 4s ease-in-out infinite 1.6s;
+    }
+    .cta-logo-card img { width: 320px; height: auto; display: block; }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: scale(0.94); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes cardBreathe {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.015); }
+    }
+
+    /* Eyebrow above the CTA tagline. Reads as a small section label, never
+       competes visually with .cta-conversemos. Lands 0.2s BEFORE the tagline
+       so the order reads "CONTACTO ↘ Conversemos." not the reverse. Each
+       style pack only overrides typography + color; the dashes live in
+       ::before / ::after so the pack can swap them (tech uses brackets). */
+    .cta-eyebrow {
+      position: relative; z-index: 1;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      margin-top: 1.75rem;
+      margin-bottom: -0.35rem;
+      opacity: 0;
+      animation: fadeUp 1.0s ease forwards 0.7s;
+    }
+    .cta-eyebrow::before { content: '— '; }
+    .cta-eyebrow::after  { content: ' —'; }
+
+    .cta-conversemos {
+      position: relative; z-index: 1;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.6rem; font-weight: 500;
+      color: #00D2FF;
+      letter-spacing: -0.01em; margin-top: 0.5rem;
+      opacity: 0;
+      animation: fadeUp 1.2s ease forwards 0.9s;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .cta-pill {
+      position: relative; z-index: 1;
+      display: inline-flex; align-items: center; gap: 1rem;
+      background: #25D366; color: white;
+      padding: 1.25rem 2.75rem;
+      border-radius: 9999px;
+      font-size: 1.7rem; font-weight: 600;
+      letter-spacing: 0.01em;
+      box-shadow: 0 0 50px rgba(37,211,102,0.45),
+                  0 12px 30px rgba(0,0,0,0.4);
+      opacity: 0;
+      animation: fadeUp 1.2s ease forwards 1.4s;
+    }
+    .cta-pill svg { width: 36px; height: 36px; }
+
+    /* =====================================================
+       MOTION OVERLAYS / CALLOUTS (optional)
+       The iframe scrolls, but nothing points the viewer's eye to WHAT matters.
+       Callouts solve that. Three variants — ring (highlight a feature),
+       box (highlight a region), stat (floating number / claim).
+
+       Per-instance positioning + timing via inline CSS variables:
+         <div class="callout callout--stat"
+              style="--x: 70%; --y: 38%; --start: 3.5s; --end: 5.5s;">
+           +47% conversión
+         </div>
+
+       Callouts are hidden during the CTA outro (body.cta-active).
+       ===================================================== */
+    .callout {
+      position: fixed;
+      left: var(--x, 50%);
+      top: var(--y, 50%);
+      z-index: 80;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -50%);
+      animation:
+        calloutFadeIn  0.35s ease-out forwards var(--start, 0s),
+        calloutFadeOut 0.35s ease-in  forwards var(--end,   1s);
+      will-change: transform, opacity;
+    }
+
+    @keyframes calloutFadeIn {
+      from { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
+      to   { opacity: 1; transform: translate(-50%, -50%) scale(1);    }
+    }
+    @keyframes calloutFadeOut {
+      from { opacity: 1; transform: translate(-50%, -50%) scale(1);    }
+      to   { opacity: 0; transform: translate(-50%, -50%) scale(1.08); }
+    }
+
+    /* Variant: pulsing ring — draws the eye to a feature on screen */
+    .callout--ring {
+      width: 140px; height: 140px;
+      border-radius: 9999px;
+      border: 3px solid #00D2FF;
+      box-shadow: 0 0 28px rgba(0, 210, 255, 0.55),
+                  inset 0 0 16px rgba(0, 210, 255, 0.25);
+    }
+    .callout--ring::after {
+      content: '';
+      position: absolute; inset: -8px;
+      border-radius: 9999px;
+      border: 2px solid rgba(0, 210, 255, 0.7);
+      animation: ringPulse 1.4s ease-out infinite;
+    }
+    @keyframes ringPulse {
+      0%   { transform: scale(0.85); opacity: 0.9; }
+      80%  { transform: scale(1.35); opacity: 0;   }
+      100% { transform: scale(1.35); opacity: 0;   }
+    }
+
+    /* Variant: highlight box — wraps a region (e.g. a pricing card) */
+    .callout--box {
+      width: var(--w, 380px);
+      height: var(--h, 220px);
+      border: 2.5px solid #00D2FF;
+      border-radius: 14px;
+      box-shadow: 0 0 32px rgba(0, 210, 255, 0.45);
+      background: linear-gradient(180deg,
+                  rgba(0,210,255,0.06) 0%,
+                  rgba(0,210,255,0)    100%);
+    }
+
+    /* Variant: floating stat — a number or claim, no element behind it */
+    .callout--stat {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.2rem; font-weight: 700;
+      color: white;
+      letter-spacing: -0.01em;
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, #00D2FF 0%, #0099CC 100%);
+      border-radius: 0.85rem;
+      box-shadow: 0 0 40px rgba(0, 210, 255, 0.5),
+                  0 12px 30px rgba(0, 0, 0, 0.45);
+      white-space: nowrap;
+    }
+    .callout--stat::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 0.95rem;
+      background: linear-gradient(135deg,
+                  rgba(255,255,255,0.4) 0%,
+                  rgba(255,255,255,0)   60%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    body.cta-active .callout { opacity: 0 !important; animation: none !important; }
+
+    /* =====================================================
+       SUBTITLES — burned-in (whisper word-level timestamps)
+       ===================================================== */
+    .subtitles {
+      position: fixed;
+      bottom: 90px;
+      left: 0; right: 0;
+      height: 80px;
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .sub {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      white-space: nowrap;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 1.7rem;
+      color: white;
+      letter-spacing: -0.01em;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.85),
+                   0 0 20px rgba(0,0,0,0.6);
+      opacity: 0;
+      padding: 0.4rem 1.2rem;
+      background: rgba(5, 10, 20, 0.55);
+      backdrop-filter: blur(12px);
+      border-radius: 0.6rem;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* Single-page-tour timing — 8 subs over 23s, paced to the scroll-tour stops:
+       sub-1, sub-2  → hero hold       (0-5s)
+       sub-3, sub-4  → features        (5-12s)
+       sub-5, sub-6  → testimonials    (12-18s)
+       sub-7, sub-8  → pricing/footer  (18-23s)
+       CTA           (23-28s):           no subs */
+    .sub-1  { animation: subFadeIn 0.18s ease-out forwards 0.30s,  subFadeOut 0.22s ease-in forwards 2.30s; }
+    .sub-2  { animation: subFadeIn 0.18s ease-out forwards 2.50s,  subFadeOut 0.22s ease-in forwards 4.80s; }
+    .sub-3  { animation: subFadeIn 0.18s ease-out forwards 5.20s,  subFadeOut 0.22s ease-in forwards 7.90s; }
+    .sub-4  { animation: subFadeIn 0.18s ease-out forwards 8.10s,  subFadeOut 0.22s ease-in forwards 11.80s; }
+    .sub-5  { animation: subFadeIn 0.18s ease-out forwards 12.20s, subFadeOut 0.22s ease-in forwards 14.80s; }
+    .sub-6  { animation: subFadeIn 0.18s ease-out forwards 15.00s, subFadeOut 0.22s ease-in forwards 17.80s; }
+    .sub-7  { animation: subFadeIn 0.18s ease-out forwards 18.20s, subFadeOut 0.22s ease-in forwards 20.50s; }
+    .sub-8  { animation: subFadeIn 0.18s ease-out forwards 20.70s, subFadeOut 0.22s ease-in forwards 22.80s; }
+
+    @keyframes subFadeIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes subFadeOut {
+      from { opacity: 1; transform: translateX(-50%) translateY(0); }
+      to   { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+    }
+
+    body.cta-active .subtitles { opacity: 0; transition: opacity 0.6s ease; }
+
+    /* =====================================================
+       STYLE PACKS — applied via <body class="style-<name>">
+       record_video.py --style <cinematic|bold|editorial|tech> injects the
+       class before window.startSlideshow() runs.
+
+       cinematic: default — no overrides needed.
+       bold:      magenta + warm palette, punch transitions, pop subtitles.
+       editorial: warm sepia + serif, letterbox bars, lower-third subtitle band.
+       tech:      matrix-green + monospace, scanlines, glitch-step transitions.
+       ===================================================== */
+
+    /* ---------- BOLD PACK (D2C / lifestyle / retail) ---------- */
+    /* Palette: magenta primary + coral secondary; vignette deeper for punch */
+    body.style-bold .demo-frame-wrapper::after {
+      background:
+        radial-gradient(ellipse at center,
+          transparent 50%,
+          rgba(5,10,20,0.55) 100%),
+        linear-gradient(to bottom,
+          rgba(5,10,20,0.35) 0%, transparent 8%,
+          transparent 92%, rgba(5,10,20,0.35) 100%);
+    }
+
+    /* Slide transition: faster + sliding crossfade for a "punch" feel.
+       The scheduler still uses opacity to switch slides — bold adds a small
+       horizontal shift so each entrance reads as motion, not a fade. */
+    body.style-bold .slide {
+      transition: opacity 0.22s cubic-bezier(0.7,0,0.3,1),
+                  transform 0.32s cubic-bezier(0.7,0,0.3,1);
+      transform: translateX(40px);
+    }
+    body.style-bold .slide.active {
+      transform: translateX(0);
+    }
+
+    /* CTA palette: magenta accent, coral pill (replaces WhatsApp green) */
+    body.style-bold .cta-slide::before {
+      background: rgba(255, 59, 126, 0.18);
+    }
+    body.style-bold .cta-eyebrow { color: rgba(255, 59, 126, 0.7); }
+    body.style-bold .cta-conversemos { color: #FF3B7E; }
+    body.style-bold .cta-pill {
+      background: linear-gradient(135deg, #FF3B7E 0%, #FF6B35 100%);
+      box-shadow: 0 0 60px rgba(255, 59, 126, 0.45),
+                  0 12px 30px rgba(0,0,0,0.4);
+    }
+
+    /* Subtitles: bigger, bolder, gradient pill bg, pop entrance instead of fade.
+       The two-animation pattern from regla #1 is preserved — only the keyframes
+       differ. subPop replaces subFadeIn for entrance dynamics. */
+    body.style-bold .sub {
+      font-weight: 700;
+      font-size: 1.95rem;
+      padding: 0.55rem 1.5rem;
+      background: linear-gradient(135deg,
+                  rgba(255, 59, 126, 0.92) 0%,
+                  rgba(255, 107, 53, 0.92) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 8px 24px rgba(255, 59, 126, 0.35);
+      backdrop-filter: none;
+      letter-spacing: 0;
+    }
+    body.style-bold .sub-1, body.style-bold .sub-2, body.style-bold .sub-3,
+    body.style-bold .sub-4, body.style-bold .sub-5, body.style-bold .sub-6,
+    body.style-bold .sub-7, body.style-bold .sub-8, body.style-bold .sub-9,
+    body.style-bold .sub-10, body.style-bold .sub-11, body.style-bold .sub-12 {
+      animation-name: subPop, subFadeOut;
+    }
+    @keyframes subPop {
+      0%   { opacity: 0; transform: translateX(-50%) translateY(8px) scale(0.85); }
+      55%  { opacity: 1; transform: translateX(-50%) translateY(0)    scale(1.05); }
+      100% { opacity: 1; transform: translateX(-50%) translateY(0)    scale(1);    }
+    }
+
+    /* Stat callouts: elastic burst entrance instead of a soft fade.
+       Ring + box keep the cinematic entrance — only stat changes (it's the one
+       that carries data/claims, so it deserves the bolder accent). */
+    body.style-bold .callout--stat {
+      background: linear-gradient(135deg, #FF3B7E 0%, #FF6B35 100%);
+      box-shadow: 0 0 50px rgba(255, 59, 126, 0.55),
+                  0 12px 30px rgba(0, 0, 0, 0.45);
+      animation:
+        calloutBurst   0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards var(--start, 0s),
+        calloutFadeOut 0.35s ease-in forwards var(--end, 1s);
+    }
+    body.style-bold .callout--ring {
+      border-color: #FF3B7E;
+      box-shadow: 0 0 32px rgba(255, 59, 126, 0.55),
+                  inset 0 0 18px rgba(255, 59, 126, 0.25);
+    }
+    body.style-bold .callout--ring::after { border-color: rgba(255, 59, 126, 0.7); }
+    body.style-bold .callout--box {
+      border-color: #FF3B7E;
+      box-shadow: 0 0 36px rgba(255, 59, 126, 0.45);
+      background: linear-gradient(180deg,
+                  rgba(255,59,126,0.08) 0%,
+                  rgba(255,59,126,0)    100%);
+    }
+    @keyframes calloutBurst {
+      0%   { opacity: 0; transform: translate(-50%, -50%) scale(0);    }
+      60%  { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1);    }
+    }
+
+    /* ---------- EDITORIAL PACK (content brands / podcasts / thought leadership) ----------
+       Vibe: NYT / Substack / premium podcast. Calm, warm, classy. Restrained motion.
+       Palette: warm cream + amber + sepia over deep warm-black. Serif display.
+       Subtitles: lower-third band (not centered), serif italic.
+       CTA: serif amber, rectangular pill.
+       Slide transition: slow cross-dissolve (no horizontal slide). */
+    body.style-editorial .demo-frame-wrapper::after {
+      background:
+        /* letterbox bars — top/bottom 7% solid warm-black */
+        linear-gradient(to bottom,
+          rgba(20,12,4,1)  0%,    rgba(20,12,4,1)  7%,
+          transparent       7.01%, transparent      92.99%,
+          rgba(20,12,4,1)  93%,   rgba(20,12,4,1)  100%),
+        /* warm vignette */
+        radial-gradient(ellipse at center,
+          rgba(255,210,140,0.04) 0%,
+          transparent 55%,
+          rgba(20,12,4,0.55) 100%);
+    }
+    body.style-editorial .slide {
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    body.style-editorial .cta-slide::before {
+      background: rgba(212, 165, 116, 0.16);
+    }
+    body.style-editorial .cta-eyebrow {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      color: rgba(212, 165, 116, 0.7);
+    }
+    body.style-editorial .cta-conversemos {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-style: italic;
+      font-weight: 400;
+      color: #D4A574;
+      letter-spacing: 0.02em;
+    }
+    body.style-editorial .cta-pill {
+      background: #D4A574;
+      color: #1A1208;
+      border-radius: 6px;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      box-shadow: 0 6px 18px rgba(212, 165, 116, 0.35);
+    }
+    body.style-editorial .cta-pill svg { fill: #1A1208; }
+    /* Lower-third band — full-width, bottom 12%, serif italic, no centered pill. */
+    body.style-editorial .sub {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 1.7rem;
+      letter-spacing: 0.01em;
+      bottom: 12%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 0.5rem 2.5rem;
+      background: linear-gradient(to right,
+                  rgba(20,12,4,0) 0%,
+                  rgba(20,12,4,0.78) 20%,
+                  rgba(20,12,4,0.78) 80%,
+                  rgba(20,12,4,0) 100%);
+      border: none;
+      border-radius: 0;
+      color: #F4E7CF;
+      backdrop-filter: none;
+      box-shadow: none;
+    }
+    body.style-editorial .sub-1, body.style-editorial .sub-2, body.style-editorial .sub-3,
+    body.style-editorial .sub-4, body.style-editorial .sub-5, body.style-editorial .sub-6,
+    body.style-editorial .sub-7, body.style-editorial .sub-8, body.style-editorial .sub-9,
+    body.style-editorial .sub-10, body.style-editorial .sub-11, body.style-editorial .sub-12 {
+      animation-name: subEditorialIn, subFadeOut;
+    }
+    @keyframes subEditorialIn {
+      0%   { opacity: 0; transform: translateX(-50%) translateY(6px); }
+      100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    body.style-editorial .callout--stat {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-weight: 600;
+      background: rgba(212, 165, 116, 0.92);
+      color: #1A1208;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.35);
+      animation:
+        calloutFadeIn  0.7s ease-out forwards var(--start, 0s),
+        calloutFadeOut 0.5s ease-in  forwards var(--end,   1s);
+    }
+    body.style-editorial .callout--ring {
+      border-color: #D4A574;
+      box-shadow: 0 0 16px rgba(212, 165, 116, 0.35);
+    }
+    body.style-editorial .callout--ring::after { border-color: rgba(212, 165, 116, 0.55); }
+    body.style-editorial .callout--box {
+      border-color: rgba(212, 165, 116, 0.7);
+      box-shadow: 0 0 18px rgba(212, 165, 116, 0.25);
+      background: linear-gradient(180deg,
+                  rgba(212,165,116,0.06) 0%,
+                  rgba(212,165,116,0)    100%);
+    }
+    @keyframes calloutFadeIn {
+      0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.94); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1);    }
+    }
+
+    /* ---------- TECH PACK (AI / dev tools / cybersecurity) ----------
+       Vibe: terminal / retrofuturist. Monospace, matrix-green accent,
+       glitch-step slide transitions, scanline overlay, RGB split on CTA.
+       Palette: #0AFF6A green primary + cyan secondary over near-black. */
+    body.style-tech .demo-frame-wrapper::after {
+      background:
+        /* scanlines — 2px horizontal pattern at 4% opacity */
+        repeating-linear-gradient(
+          to bottom,
+          rgba(10,255,106,0.04) 0px,
+          rgba(10,255,106,0.04) 1px,
+          transparent           1px,
+          transparent           3px),
+        /* tighter vignette, cooler black */
+        radial-gradient(ellipse at center,
+          transparent 45%,
+          rgba(0,8,4,0.7) 100%);
+    }
+    /* Glitch step transition: short, hard, with a flash at the midpoint.
+       cubic-bezier(0.9, 0, 0.1, 1) is near-stepwise — feels digital, not analog. */
+    body.style-tech .slide {
+      transition: opacity 0.18s cubic-bezier(0.9, 0, 0.1, 1),
+                  filter   0.18s cubic-bezier(0.9, 0, 0.1, 1);
+    }
+    body.style-tech .slide:not(.active) {
+      filter: hue-rotate(20deg) saturate(1.4);
+    }
+    body.style-tech .cta-slide::before {
+      background: rgba(10, 255, 106, 0.12);
+    }
+    body.style-tech .cta-eyebrow {
+      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+      letter-spacing: 0.15em;
+      color: rgba(10, 255, 106, 0.65);
+    }
+    /* Tech swaps the em-dashes for square brackets so the eyebrow reads as
+       a terminal tag like [ CONTACTO ] instead of "— CONTACTO —". */
+    body.style-tech .cta-eyebrow::before { content: '[ '; }
+    body.style-tech .cta-eyebrow::after  { content: ' ]'; }
+
+    body.style-tech .cta-conversemos {
+      font-family: 'JetBrains Mono', 'Fira Code', Consolas, 'Courier New', monospace;
+      font-weight: 600;
+      color: #0AFF6A;
+      letter-spacing: 0;
+      text-shadow: 0 0 12px rgba(10, 255, 106, 0.45);
+    }
+    body.style-tech .cta-conversemos::before { content: '> '; opacity: 0.7; }
+    body.style-tech .cta-pill {
+      background: transparent;
+      color: #0AFF6A;
+      border: 2px solid #0AFF6A;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+      font-weight: 600;
+      box-shadow: 0 0 24px rgba(10, 255, 106, 0.35),
+                  inset 0 0 12px rgba(10, 255, 106, 0.12);
+    }
+    body.style-tech .cta-pill svg { fill: #0AFF6A; }
+    /* Subtitles: terminal line — mono, green-on-black box, prompt prefix,
+       step-reveal entrance (no smooth fade — feels digital). */
+    body.style-tech .sub {
+      font-family: 'JetBrains Mono', 'Fira Code', Consolas, 'Courier New', monospace;
+      font-weight: 500;
+      font-size: 1.55rem;
+      letter-spacing: 0;
+      padding: 0.4rem 1.1rem;
+      background: rgba(0, 8, 4, 0.85);
+      border: 1px solid rgba(10, 255, 106, 0.55);
+      border-radius: 2px;
+      color: #0AFF6A;
+      text-shadow: 0 0 6px rgba(10, 255, 106, 0.35);
+      backdrop-filter: none;
+      box-shadow: 0 0 14px rgba(10, 255, 106, 0.15);
+    }
+    body.style-tech .sub::before { content: '> '; opacity: 0.7; }
+    body.style-tech .sub-1, body.style-tech .sub-2, body.style-tech .sub-3,
+    body.style-tech .sub-4, body.style-tech .sub-5, body.style-tech .sub-6,
+    body.style-tech .sub-7, body.style-tech .sub-8, body.style-tech .sub-9,
+    body.style-tech .sub-10, body.style-tech .sub-11, body.style-tech .sub-12 {
+      animation-name: subTechIn, subFadeOut;
+    }
+    /* Step reveal in 3 micro-flashes — reads as a glitch, not a slide. */
+    @keyframes subTechIn {
+      0%   { opacity: 0; transform: translateX(-50%) translateY(0); }
+      18%  { opacity: 1; }
+      26%  { opacity: 0.2; }
+      40%  { opacity: 1; }
+      48%  { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+    body.style-tech .callout--stat {
+      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+      font-weight: 600;
+      background: rgba(0, 8, 4, 0.92);
+      color: #0AFF6A;
+      border: 2px solid #0AFF6A;
+      box-shadow: 0 0 32px rgba(10, 255, 106, 0.45),
+                  inset 0 0 14px rgba(10, 255, 106, 0.15);
+      text-shadow: 0 0 8px rgba(10, 255, 106, 0.45);
+    }
+    body.style-tech .callout--ring {
+      border-color: #0AFF6A;
+      box-shadow: 0 0 24px rgba(10, 255, 106, 0.5),
+                  inset 0 0 14px rgba(10, 255, 106, 0.2);
+    }
+    body.style-tech .callout--ring::after { border-color: rgba(10, 255, 106, 0.65); }
+    body.style-tech .callout--box {
+      border-color: #0AFF6A;
+      box-shadow: 0 0 22px rgba(10, 255, 106, 0.4);
+      background: linear-gradient(180deg,
+                  rgba(10,255,106,0.06) 0%,
+                  rgba(10,255,106,0)    100%);
+    }
+  </style>
+</head>
+<body>
+  <!-- Single-page-tour structure: ONE 23s scroll-tour of {{PAGE_URL}} + CTA.
+       Ideal for SaaS landings and one-pagers where the whole value prop
+       lives on a single URL. The scroll-tour keyframes above are tuned to
+       land on hero → features → testimonials → pricing → footer at the
+       right beats; hand-tune translateY per client. -->
+
+  <!-- 1. Long-form page tour (0–23s) -->
+  <div class="slide demo-slide active" data-duration="23000">
+    <div class="demo-frame-wrapper">
+      <iframe class="page-1" src="{{PAGE_URL}}" loading="eager" sandbox="allow-same-origin allow-scripts" onload="window.iframe1Loaded=true"></iframe>
+    </div>
+  </div>
+
+  <!-- 2. CTA (23–28s) -->
+  <div class="slide cta-slide" data-duration="5000">
+    <div class="cta-logo-card">
+      <img src="{{LOGO_FILENAME}}" alt="{{CLIENT_NAME}}">
+    </div>
+    <div class="cta-eyebrow">CONTACTO</div>
+    <div class="cta-conversemos">{{CTA_TAGLINE}}</div>
+    <div class="cta-pill">
+      <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.74.46 3.46 1.32 4.97L2 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.66-1.03-5.16-2.91-7.04A9.85 9.85 0 0012.04 2zm.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 012.41 5.83c0 4.54-3.7 8.23-8.24 8.23-1.48 0-2.93-.39-4.19-1.15l-.3-.17-3.12.82.83-3.04-.2-.32a8.188 8.188 0 01-1.26-4.38c.01-4.54 3.7-8.24 8.25-8.24zm-2.84 4.46c-.18 0-.45.07-.69.32-.24.25-.91.89-.91 2.18 0 1.29.93 2.53 1.06 2.71.13.18 1.81 2.88 4.46 3.93 2.21.87 2.66.7 3.14.66.48-.04 1.55-.63 1.77-1.24.22-.61.22-1.13.16-1.24-.06-.11-.24-.18-.5-.31-.27-.13-1.55-.77-1.79-.85-.24-.09-.42-.13-.6.13-.18.27-.69.85-.84 1.03-.16.18-.31.2-.58.07-.27-.13-1.13-.42-2.16-1.33-.8-.71-1.34-1.59-1.49-1.86-.16-.27-.02-.41.12-.55.12-.12.27-.31.41-.47.13-.16.18-.27.27-.45.09-.18.04-.34-.02-.47-.06-.13-.59-1.42-.81-1.93-.21-.51-.43-.44-.59-.45-.15-.01-.32-.01-.5-.01z"/>
+      </svg>
+      {{CTA_PHONE}}
+    </div>
+  </div>
+
+  <!-- Fake cursor overlay (1 instance, 1 transition) — strong stroke for universal visibility -->
+  <svg class="fake-cursor cursor-1" viewBox="0 0 24 36" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,0 L0,28 L7,21 L11,30 L14,29 L10,20 L18,20 Z"
+          fill="white" stroke="black" stroke-width="3" stroke-linejoin="round"/>
+  </svg>
+
+  <!--
+    Motion overlays / callouts (OPTIONAL — uncomment + position per client).
+    All callouts are hidden during the CTA slide.
+
+    <div class="callout callout--ring"
+         style="--x: 70%; --y: 42%; --start: 3.2s; --end: 5.2s;"></div>
+
+    <div class="callout callout--box"
+         style="--x: 50%; --y: 60%; --w: 480px; --h: 260px;
+                --start: 4.0s; --end: 7.5s;"></div>
+
+    <div class="callout callout--stat"
+         style="--x: 76%; --y: 30%; --start: 12.5s; --end: 15.0s;">
+      +47% conversión
+    </div>
+  -->
+
+  <!-- Burned-in subtitles — 8 lines paced to the scroll-tour stops:
+       sub-1, sub-2  → hero hold       (0-5s)
+       sub-3, sub-4  → features        (5-12s)
+       sub-5, sub-6  → testimonials    (12-18s)
+       sub-7, sub-8  → pricing/footer  (18-23s)
+       Replace text per client to match your voiceover. -->
+  <div class="subtitles">
+    <div class="sub sub-1">Tu producto.</div>
+    <div class="sub sub-2">En un solo lugar.</div>
+    <div class="sub sub-3">Las funciones que importan.</div>
+    <div class="sub sub-4">Sin ruido. Sin paja.</div>
+    <div class="sub sub-5">Quienes ya lo usan</div>
+    <div class="sub sub-6">no vuelven atrás.</div>
+    <div class="sub sub-7">Precio justo.</div>
+    <div class="sub sub-8">Resultados claros.</div>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    let current = 0;
+
+    function next() {
+      current++;
+      if (current < slides.length) {
+        slides.forEach(s => s.classList.remove('active'));
+        slides[current].classList.add('active');
+        if (slides[current].classList.contains('cta-slide')) {
+          document.body.classList.add('cta-active');
+        }
+        setTimeout(next, parseInt(slides[current].dataset.duration));
+      }
+    }
+
+    /* Slideshow + scroll-tour animations are gated until the iframe is fully loaded.
+       Python (record_video.py) calls window.startSlideshow() once it has waited for
+       iframe load — this prevents white "loading" frames at the start of the recording. */
+    document.documentElement.classList.add('slideshow-paused');
+    const styleEl = document.createElement('style');
+    styleEl.textContent =
+      ".slideshow-paused .demo-slide.active .page-1," +
+      ".slideshow-paused .demo-slide.active .page-2," +
+      ".slideshow-paused .fake-cursor," +
+      ".slideshow-paused .sub { animation-play-state: paused !important; }";
+    document.head.appendChild(styleEl);
+
+    /* startSlideshow is IDEMPOTENT — second calls are no-ops.
+       Why: a 5s dev-preview fallback (below) can race with Python's trigger
+       when the iframe loads slowly. Without the guard, slideshow would start
+       twice and the trim offset becomes inaccurate.
+       The sync marker is a 6x6 magenta pixel in the top-right corner that
+       flashes for 2 frames. record_video.py scans the webm for the first
+       magenta frame and uses its timestamp as the trim offset, instead of
+       relying on wall-clock measurement (which is off by Playwright's
+       recording-onset delay + any JS-fallback race). */
+    window.startSlideshow = function() {
+      if (window.__slideshowStarted) return;
+      window.__slideshowStarted = true;
+
+      const m = document.createElement('div');
+      m.id = '__sync-marker';
+      m.style.cssText =
+        'position:fixed;top:0;right:0;width:6px;height:6px;' +
+        'background:#FF00FF;z-index:99999;pointer-events:none;';
+      document.body.appendChild(m);
+      requestAnimationFrame(() => requestAnimationFrame(() => m.remove()));
+
+      document.documentElement.classList.remove('slideshow-paused');
+      setTimeout(next, parseInt(slides[0].dataset.duration));
+    };
+
+    /* Auto-fallback: if Python doesn't trigger within 5s (e.g. opening file directly
+       in a browser for dev preview), start anyway. Idempotent guard protects against
+       race when both fallback and Python fire close together. */
+    setTimeout(function() {
+      if (document.documentElement.classList.contains('slideshow-paused')) {
+        window.startSlideshow();
+      }
+    }, 5000);
+  </script>
+</body>
+</html>

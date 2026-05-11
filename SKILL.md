@@ -39,9 +39,19 @@ Confirm with the user; do NOT invent these. Six are REQUIRED — do NOT proceed 
 5. **Voice off MP3** — `videos/voiceover.mp3` already generated. Claude does NOT have ElevenLabs credentials and cannot generate this. If the user doesn't have it, walk them through the ElevenLabs steps (Voice presets table in section 9.1) and STOP — wait for them to download the MP3 and confirm before continuing
 6. **Background music MP3** — `videos/music.mp3` already downloaded. Royalty-free source (YouTube Audio Library, Pixabay, Mixkit). If the user doesn't have one, give them search filters (Cinematic / Corporate / Inspirational, 1+ min) and STOP — wait for the file before continuing
 
-### Optional (1) — sensible default if missing
+### Required (1 more) — block until decided
 
-7. **Multi-page tour subpages** — 2–3 URLs to include beyond the homepage (e.g., `/products`, `/about`, `/contact`). If the user has none in mind, OFFER auto-discovery (Playwright scrapes the nav menu — see "Auto-discovery of subpages" section). Default if they decline both: homepage-only.
+7. **Style pack** (regla #23) — visual lenguage of the video. Four packs, one is mandatory. ALWAYS show the user the Style Pack Selector table (next section) and ASK which pack to use BEFORE customizing HTML. Default if the user has no opinion: `cinematic`. The chosen pack drives palette, transitions, subtitle treatment, and callout entrance — it's a single coherent decision, not a checkbox list.
+
+### Optional (4) — sensible default if missing
+
+8. **Multi-page tour subpages** — 2–3 URLs to include beyond the homepage (e.g., `/products`, `/about`, `/contact`). If the user has none in mind, OFFER auto-discovery (Playwright scrapes the nav menu — see "Auto-discovery of subpages" section). Default if they decline both: homepage-only.
+
+9. **SFX cues** (regla #20) — `sfx.json` + `sfx/*.mp3` files in the project folder. If the user wants the audio layer with whoosh / click / sub-bass, ASK them to drop SFX files into `sfx/` and write the cue list. The cue palette and free SFX sources are in `docs/sound-design.md`. If missing, pipeline mixes voice + music only — DO NOT block on this.
+
+10. **Motion overlays / callouts** (regla #21) — only relevant if the user wants to call attention to a specific feature, stat, or region of the scrolling page. The templates ship with a commented example block right before the subtitles. If the user has stats / claims worth surfacing visually, ask for them and uncomment+position the callouts; otherwise leave the block commented and ship without.
+
+11. **Channel target** (regla #22) — `--channel tiktok` / `linkedin` / `youtube` flag on the recorder, applies only to vertical renders. If the user names TikTok / Reels / Shorts specifically, ALWAYS use `--channel tiktok` (subtitles must avoid the bottom UI). Default is fine for LinkedIn or general use.
 
 ### Hard gate
 
@@ -54,6 +64,33 @@ ls -lh videos/voiceover.mp3 videos/music.mp3 videos/<client>-logo.png
 ```
 
 If any returns "No such file", stop and ask the user to provide it before proceeding.
+
+## Style Pack Selector (mandatory step)
+
+Right after the 6 required inputs are collected and BEFORE you customize a single line of HTML, show this table to the user and ask which pack to use. The user picks ONE. The pack is then applied as `body.style-<name>` via `record_video.py --style <name>` — no manual CSS surgery per client.
+
+| Pack | For | Personality |
+|---|---|---|
+| **cinematic** (default) | SaaS, B2B, agencies, consultoras, fintechs, brands selling trust | Dark navy + cyan, drone landing, restrained crossfades, breathing CTA. Looks like Apple's product launch trailers. |
+| **bold** | D2C, ecommerce, restaurantes, fitness, lifestyle, retail | Magenta + coral palette, punch transitions, pop-entrance subtitles, elastic stat callouts. Looks like a Glossier / Gymshark / DTC video. |
+| **editorial** | Podcasts, newsletters, content brands, thought leadership, periodismo digital | Warm sepia + amber palette, serif italic CTA, letterbox bars (top/bottom), lower-third subtitle band (no centered pill), slow cross-dissolves. Looks like a BBC documentary intro. |
+| **tech** | AI startups, dev tools, infra, ciberseguridad | Matrix-green (#0AFF6A) on near-black, JetBrains Mono / Fira Code, scanline overlay, glitch-step subtitle reveal, `> ` prompt prefix on CTA & subs, hue-rotate on inactive slides. Looks like a hacker movie. |
+
+How to phrase the question:
+
+> "Vamos a elegir la dirección visual. Tenés 4 packs:
+> - **cinematic** — la apuesta segura: dark, cinematográfico, sobrio. Va con casi todo
+> - **bold** — magenta + coral, pop, energético. Para ecommerce y lifestyle
+> - **editorial** — lower-third tipo BBC, cinematic ratio, serif italic. Para contenido / podcasts
+> - **tech** — terminal, glitch, matrix-green mono. Para AI / dev tools
+>
+> ¿Cuál encaja con la marca?"
+
+Rules for this step:
+
+- **Always show all 4 — don't pre-filter.** Even if the brand looks "obviously cinematic," the user might be repositioning.
+- **Never invent a 5th pack on the fly.** If the user wants something off-menu (e.g., "neon retro 80s synthwave"), explain that we'd add it as a real `style-<name>` selector and that's a follow-up engagement, not a per-client customization.
+- **One pack per video.** Don't try to mix `bold` with `cinematic` subtitles — packs are coherent design systems, mixing them defeats the purpose.
 
 ## Non-negotiable rules
 
@@ -104,6 +141,14 @@ These are mistakes that look correct in code but break the result. Never violate
 18. **Fake cursor SVG must use a strong stroke (≥ 2.5 px) and dual drop-shadow** so it stays visible on ANY background. White fill alone disappears on light pages; thin strokes vanish in compression. The combination `fill: white; stroke: black; stroke-width: 3; stroke-linejoin: round` plus `filter: drop-shadow(0 0 6px rgba(0,0,0,0.9)) drop-shadow(0 4px 10px rgba(0,0,0,0.7))` is the proven pattern. Never use a single drop-shadow or stroke under 2 px — they fail on white-on-white.
 
 19. **Never declare a render "done" without running the QA review process (Step 7).** A successful render exit code does NOT mean the video is correct — Playwright recordings frequently have iframe-load white frames, cursor invisibility on bright backgrounds, subtitle drift, misframing, and white-page flashes that pass the render but fail visually. The ONLY way to catch these is to extract critical frames with FFmpeg, READ them via the Read tool, and inspect them against the error pattern table in Step 7c. If you skip this step and tell the user "listo", you'll either: (a) ship a broken video they discover later, or (b) waste rounds when they ask "did you check?". Always inspect before declaring done. Rendering is fast; iteration on a missed bug is slow.
+
+20. **SFX layer is OPTIONAL and additive — never required.** When the user provides `sfx.json` in the project folder, `record_video.py` mixes the cues into the audio via `adelay` + `amix`. SFX timings are in **slideshow-time** (t=0 = first frame the viewer sees), NOT wall-clock recording time. Voice = 1.0, music = 0.18, SFX should be ≤ 0.6 (sub-bass excepted up to 0.7). Click SFX must fire 0.05–0.10 s AFTER the cursor pulse start, never before — perfect sync feels mechanical. Never stack 3+ SFX in the same 0.5 s window. If `sfx.json` is missing, the pipeline runs as before with voice + music only. Full guide: `docs/sound-design.md`.
+
+21. **Callouts are accents, not decoration.** The `.callout--ring` / `.callout--box` / `.callout--stat` system in the templates exists to point the viewer's eye at WHAT matters on the scrolling iframe. Rules: max **2 callouts on screen at once** (more = noise), position OFF the iframe's visual center (the iframe is doing its job, the callout annotates it), and **time the callout to the voice phrase that names it** (the eye should arrive at the number while the ear is still hearing it). Callouts auto-hide during the CTA outro via `body.cta-active .callout` — never override this. If a slide has no specific element to point at, ship without callouts on that slide; an unmotivated callout reads as clutter.
+
+22. **Channel variants for vertical are body-class overrides, not template forks.** When the user asks for a TikTok / Reels / Shorts video, run `record_video.py --channel tiktok` (or `linkedin` / `youtube`); the recorder injects `body.channel-<name>` via Playwright before the slideshow starts, and the vertical template's CSS shifts subtitle placement to avoid the platform's native UI. **TikTok subtitles MUST move from `bottom: 240px` to `top: 58%`** — the bottom 25% of a TikTok vertical frame is covered by the likes/share/comments rail, so default placement gets eaten. LinkedIn keeps defaults (clean bottom-feed UI). YouTube Shorts moves subtitles slightly lower (`bottom: 140px`) for a more cinematic frame since its bottom controls auto-hide on play. Render output filenames carry the suffix (`marketing-vertical-tiktok.mp4`) — never overwrite a channel render with a different channel render.
+
+23. **Style packs are mandatory and asked BEFORE HTML customization.** The skill ships 4 visual style packs: `cinematic` (default — SaaS/B2B), `bold` (D2C/lifestyle/retail), `editorial` (content brands / podcasts — warm sepia + serif + letterbox), `tech` (AI/dev tools — matrix-green + monospace + glitch). Before editing the HTML template, ALWAYS show the Style Pack Selector table (next section) and ASK which pack to use. The pack maps to a `body.style-<name>` class injected by `record_video.py --style <name>`. **One coherent pack per video — never mix.** Render output filenames are suffixed when the pack is non-default (`marketing-square-bold.mp4`, `marketing-vertical-tech.mp4`).
 
 ## Workflow (condensed — see PIPELINE.md for full detail)
 
@@ -192,12 +237,20 @@ phrases.forEach(([text, s, e], i) => {
 
 ```bash
 cd videos
-python record_video.py            # both formats
+python record_video.py            # both formats, cinematic style, default channel
 python record_video.py square     # only square
 python record_video.py vertical   # only vertical
+python record_video.py . --style bold                          # bold pack (both formats)
+python record_video.py . vertical --style bold --channel tiktok # bold + TikTok placement
+python record_video.py . vertical --channel linkedin
+python record_video.py . vertical --channel youtube
 ```
 
-Each format takes ~30 s. Both formats: ~80 s total.
+Each format takes ~30 s. Both formats: ~80 s total. Each channel or style variant adds one extra pass; render multiple variants in sequence to produce platform-tuned + brand-tuned outputs without overwriting (filenames are suffixed: `marketing-vertical-bold-tiktok.mp4`).
+
+If `sfx.json` is present in the project folder, SFX cues are mixed into the audio automatically — no extra flag needed.
+
+`--style` and `--channel` are orthogonal: style controls the visual lenguage (palette, transitions, subtitle treatment), channel controls subtitle PLACEMENT on the frame (where the platform's native UI lives). Both can combine freely.
 
 ### 7. QA review process (MANDATORY — never skip)
 

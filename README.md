@@ -31,7 +31,58 @@ Each video bundles:
 - Voice off + ducked background music
 - Branded CTA outro (logo + phone/contact)
 
-See [`examples/causal-ai-digital-demo/`](examples/causal-ai-digital-demo/) for a fully rendered example.
+See [`examples/causal-ai-digital-demo/`](examples/causal-ai-digital-demo/) for fully rendered examples across all 6 templates.
+
+---
+
+## Templates, style packs, and channels
+
+The pipeline is built around **three orthogonal axes** you combine freely:
+
+### Templates (`--template <name>`) — the STRUCTURE
+
+Six structural layouts, each suited to a different kind of site. Pick **one** per video.
+
+| Template | Best for | Slides |
+|---|---|---|
+| `tour-pages` (default) | Multi-page sites: home → products → contact | 3 |
+| `multi-product` | Ecommerce / catalogue with featured products | 5 (home → catalogue → 2 product details → CTA) |
+| `single-page-tour` | SaaS landings / one-pagers where everything lives on `/` | 2 (one 23s scroll-tour + CTA) |
+| `feature-spotlight` | Long landings with 3 key sections to highlight | 4 (3 zoom-and-hold spotlights + CTA) |
+| `split-mobile-desktop` | Agencies showing responsive design | 2 (side-by-side mobile + desktop + CTA) |
+| `before-after` | Redesigns / migrations / rebrands | 2 (split with `ANTES` / `AHORA` badges + CTA) |
+
+Each template has its own placeholder set — see [`templates/README.md`](templates/README.md) for the full per-template specs and [`templates/CONTRACT.md`](templates/CONTRACT.md) for the rules every template respects.
+
+### Style packs (`--style <name>`) — the VISUAL LANGUAGE
+
+Four coherent design systems applied via `body.style-<name>`. Pick **one** per video. Works with all 6 templates.
+
+| Pack | For | Look |
+|---|---|---|
+| `cinematic` (default) | SaaS / B2B / agencies | Dark navy + cyan, restrained crossfades, breathing CTA |
+| `bold` | D2C / ecommerce / lifestyle | Magenta + coral, punch transitions, pop subtitles, elastic stat callouts |
+| `editorial` | Podcasts / content brands / thought leadership | Warm sepia + serif italic, letterbox bars, lower-third subtitle band |
+| `tech` | AI / dev tools / cybersecurity | Matrix-green + monospace, scanline overlay, glitch-step subtitle reveal |
+
+### Channel variants (`--channel <name>`) — the PLATFORM TUNING (vertical only)
+
+Each social platform's native UI eats different parts of the frame. The channel flag shifts subtitle placement so it never gets covered by likes/share rails or auto-hiding controls.
+
+| Channel | What changes |
+|---|---|
+| `default` (LinkedIn / generic) | No change — placement is already correct |
+| `tiktok` | Subtitles move up to clear the right-side likes/share/comments column |
+| `youtube` | Subtitles drop slightly lower for a more cinematic frame (Shorts auto-hides bottom controls) |
+| `linkedin` | Alias of default |
+
+### Combinations
+
+```
+6 templates × 4 style packs × 4 channels = 96 distinct video configurations
+```
+
+…all from the **same** voiceover + logo + URLs. Build one render config per platform, no asset duplication.
 
 ---
 
@@ -161,13 +212,23 @@ If you prefer manual:
 whisper-cli -m models/ggml-small.bin -l es -oj -of transcript voiceover.mp3
 node scripts/transcript_convert.mjs    # flattens nested whisper JSON
 
-# 2. Copy templates and edit them with your inputs (see templates/README.md)
-cp templates/square.html my-project/video-square.html
-cp templates/vertical.html my-project/video-vertical.html
+# 2. Pick a template, copy its 2 format files into your project folder
+#    (see "Templates" section above to pick one — default is tour-pages)
+cp templates/tour-pages-square.html  my-project/
+cp templates/tour-pages-vertical.html my-project/
 
-# 3. Render
+# 3. Edit them with your inputs (placeholders documented in templates/README.md)
+
+# 4. Render — both formats, default style + channel
 python scripts/record_video.py my-project/
+
+# Or pick a specific template + style + channel for a target platform:
+python scripts/record_video.py my-project/ --template multi-product --style bold
+python scripts/record_video.py my-project/ vertical --channel tiktok --style bold
+python scripts/record_video.py my-project/ --template before-after --style editorial
 ```
+
+Output filenames are auto-suffixed when you pick non-default values (e.g. `marketing-square-multi-product-bold.mp4`) so renders for different platforms don't overwrite each other.
 
 ---
 
@@ -175,39 +236,47 @@ python scripts/record_video.py my-project/
 
 ```
 creador_videos_ai/
-├── README.md                              ← this file
-├── LICENSE                                ← MIT
-├── SKILL.md                               ← the Claude Code skill
+├── README.md                                  ← this file
+├── LICENSE                                    ← MIT
+├── SKILL.md                                   ← the Claude Code skill
 ├── .gitignore
 │
 ├── templates/
-│   ├── square.html                        ← 1080×1080 template (sanitized)
-│   ├── vertical.html                      ← 1080×1920 template (sanitized)
-│   └── README.md                          ← what to edit in each template
+│   ├── README.md                              ← per-template specs (placeholders + structure)
+│   ├── CONTRACT.md                            ← rules every template respects (marker, classes, scheduler)
+│   ├── tour-pages-{square,vertical}.html      ← 3 slides: home → products → CTA  (DEFAULT)
+│   ├── multi-product-{square,vertical}.html   ← 5 slides: home → catalogue → 2 products → CTA
+│   ├── single-page-tour-{square,vertical}.html ← 2 slides: 23s scroll-tour + CTA
+│   ├── feature-spotlight-{square,vertical}.html ← 4 slides: 3 zoom-and-hold spotlights + CTA
+│   ├── split-mobile-desktop-{square,vertical}.html ← 2 slides: side-by-side devices + CTA
+│   └── before-after-{square,vertical}.html    ← 2 slides: ANTES / AHORA split + CTA
 │
 ├── scripts/
-│   ├── record_video.py                    ← Playwright + FFmpeg orchestrator
-│   ├── discover_pages.py                  ← auto-discover subpages
-│   └── transcript_convert.mjs             ← whisper.cpp JSON → flat array
+│   ├── record_video.py                        ← Playwright + FFmpeg orchestrator
+│   ├── discover_pages.py                      ← auto-discover subpages
+│   └── transcript_convert.mjs                 ← whisper.cpp JSON → flat array
 │
 ├── docs/
-│   ├── voice-presets.md                   ← ElevenLabs voice + style table per language
-│   ├── whisper-install.md                 ← detailed whisper.cpp setup
-│   └── troubleshooting.md                 ← 10 most common bugs + fixes
+│   ├── voice-presets.md                       ← ElevenLabs voice + style table per language
+│   ├── whisper-install.md                     ← detailed whisper.cpp setup
+│   ├── sound-design.md                        ← optional sfx.json layer for whoosh / click / sub-bass
+│   └── troubleshooting.md                     ← 10 most common bugs + fixes
 │
 └── examples/
-    └── causal-ai-digital-demo/            ← fully working example
-        ├── README.md                      ← the inputs we used
-        ├── voiceover.mp3                  ← Mateo Aragon, Spanish LATAM, ~24s
-        ├── music.mp3                      ← cinematic ambient
+    └── causal-ai-digital-demo/                ← fully working example, rendered in all 6 templates
+        ├── README.md                          ← the inputs we used
+        ├── voiceover.mp3                      ← Mateo Aragon, Spanish LATAM, ~24s
+        ├── music.mp3                          ← cinematic ambient
         ├── causal-ai-digital-logo.png
-        ├── transcript.json                ← word-level whisper output
-        ├── video-marketing-services.html  ← square (multi-page tour)
-        ├── video-marketing-services-vertical.html
-        ├── output/
-        │   ├── marketing-square.mp4       ← rendered output
-        │   └── marketing-vertical.mp4
-        └── qa-frames/                     ← QA frames extracted post-render
+        ├── transcript.json                    ← word-level whisper output
+        ├── tour-pages-{square,vertical}.html  ← demo of each template (placeholders pre-filled)
+        ├── multi-product-{square,vertical}.html
+        ├── ... (one pair per template)
+        └── output/
+            ├── marketing-square.mp4            ← tour-pages, cinematic, default channel
+            ├── marketing-square-multi-product.mp4
+            ├── marketing-square-bold.mp4
+            └── ... (one mp4 per template × style × channel combo rendered)
 ```
 
 ---
